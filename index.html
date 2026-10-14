@@ -65,7 +65,7 @@ a{color:inherit}
 .claim{display:flex;align-items:center;flex-wrap:wrap;gap:6px;width:100%;max-width:560px;background:var(--card);border:1px solid var(--line);border-radius:28px;padding:6px 6px 6px 18px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
 .claim:focus-within{border-color:color-mix(in srgb,var(--c2) 60%,transparent)}
 .claim .pre{font-family:var(--f-mono);font-size:13px;color:var(--muted);white-space:nowrap}
-.claim input{flex:1 1 120px;min-width:0;background:transparent;border:0;outline:0;color:var(--fg);font:600 17px var(--f-body);padding:10px 2px}
+.claim input[type=text]{flex:1 1 120px;min-width:0;width:auto;background:transparent;border:0;border-radius:0;outline:0;color:var(--fg);font:600 17px var(--f-body);padding:10px 2px}
 .avail{min-height:20px;margin:-14px 0 0 18px;font-size:13px;color:var(--muted)}
 .avail.ok{color:var(--ok)} .avail.bad{color:var(--bad)}
 .points{display:flex;flex-wrap:wrap;gap:10px 26px;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:10px 0 0;padding:0;list-style:none}
@@ -973,13 +973,13 @@ function initGL(){
     if(mesh){ mesh.rotation.y+=dt*spd*.35; mesh.rotation.x+=dt*spd*.12; }
     group.rotation.y=mouse.x*.45; group.rotation.x=mouse.y*.3+sc*.6;
     const wide=innerWidth>=900;
-    const tx = MODE==='home' ? (wide?1.9:0) : (MODE==='edit' && wide && document.body.classList.contains('po') ? -1.2 : 0);
+    const tx = MODE==='home' ? (wide?Math.min(3, 1.2*camera.aspect):0) : (MODE==='edit' && wide && document.body.classList.contains('po') ? -1.2 : 0);
     offX += (tx-offX)*Math.min(1,dt*3);
     group.position.x=offX;
     group.position.y=(MODE==='home' ? (wide?.1:-1.1) : .55)+sc*1.4;
     introT=Math.min(1,introT+dt/2.6); const e=1-Math.pow(1-introT,4);
     camera.position.z=6+(1-e)*12; camera.position.x=(1-e)*-2.5; camera.lookAt(0,.2,0);
-    group.scale.setScalar(.15+.85*e);
+    group.scale.setScalar((.15+.85*e) * (MODE==='home' ? (wide ? .72 : .6) : 1));
     points.rotation.y+=dt*.04*spd*3; points.rotation.x=mouse.y*.15;
     renderer.render(scene,camera); requestAnimationFrame(loop);
   }
@@ -1020,7 +1020,7 @@ async function boot(){
   USER = session ? session.user : null;
 
   if(path==='' ){
-    MODE='home'; S=defaults('Orbite'); S.shape='noeud'; if(GL) GL.setShape(); applyTheme();
+    MODE='home'; S=defaults('Orbite'); S.shape='noeud'; S.amp=28; if(GL) GL.setShape(); applyTheme();
     show('home');
     if(USER){ $('navLogin').hidden=true; $('navEditor').hidden=false; }
     let seen=false; try{ seen=sessionStorage.getItem('orbite-intro')==='1'; sessionStorage.setItem('orbite-intro','1'); }catch(_){}
