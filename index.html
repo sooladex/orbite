@@ -3,14 +3,44 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Orbite · Tous tes liens, en orbite</title>
-<meta name="description" content="Crée ta page de liens en 3D : forme vivante, intro cinématique, couleurs, polices et couvertures à ton image. Gratuit.">
+<!--SEO-->
+<title>Orbite · Page « lien en bio » en 3D, gratuite – alternative à Linktree</title>
+<meta name="description" content="Crée gratuitement ta page de liens en 3D : forme animée, intro cinématique, couleurs, polices et couvertures à ton image. L'alternative créative à Linktree pour Instagram, TikTok et YouTube.">
+<link rel="canonical" href="https://orbite.sooladex.com/">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Orbite">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:url" content="https://orbite.sooladex.com/">
 <meta property="og:title" content="Orbite · Tous tes liens, en orbite">
-<meta property="og:description" content="Une page de liens en 3D, à ton image. Gratuit.">
+<meta property="og:description" content="Ta page « lien en bio » en 3D : forme vivante, intro cinématique, couleurs et polices à ton image. Gratuit.">
+<meta property="og:image" content="https://orbite.sooladex.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Orbite, page de liens en 3D">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Orbite · Tous tes liens, en orbite">
+<meta name="twitter:description" content="Ta page « lien en bio » en 3D, gratuite et à ton image.">
+<meta name="twitter:image" content="https://orbite.sooladex.com/og.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[
+{"@type":"WebSite","@id":"https://orbite.sooladex.com/#site","url":"https://orbite.sooladex.com/","name":"Orbite","inLanguage":"fr-FR","description":"Page de liens « lien en bio » en 3D, gratuite et personnalisable."},
+{"@type":"WebApplication","name":"Orbite","url":"https://orbite.sooladex.com/","applicationCategory":"SocialNetworkingApplication","operatingSystem":"Web","inLanguage":"fr-FR","image":"https://orbite.sooladex.com/og.png","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"description":"Crée ta page de liens en 3D : forme animée, intro cinématique, couleurs, polices et couvertures personnalisables."},
+{"@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Qu'est-ce qu'Orbite ?","acceptedAnswer":{"@type":"Answer","text":"Orbite est une page « lien en bio » : une seule adresse qui rassemble tous tes liens (Instagram, TikTok, YouTube, boutique, portfolio). Elle s'affiche avec une forme 3D animée et une intro cinématique."}},
+{"@type":"Question","name":"Orbite est-il gratuit ?","acceptedAnswer":{"@type":"Answer","text":"Oui. La création du compte, la page, la personnalisation et le compteur de visites sont gratuits."}},
+{"@type":"Question","name":"Quelle différence avec Linktree ?","acceptedAnswer":{"@type":"Answer","text":"Orbite fait le même travail, mais la page est immersive : forme 3D interactive, intro animée, 8 polices de titre, couleurs libres, couvertures d'image et trois dispositions de liens."}},
+{"@type":"Question","name":"Comment créer ma page Orbite ?","acceptedAnswer":{"@type":"Answer","text":"Réserve ton pseudo sur l'accueil, crée ton compte avec ton e-mail, puis ajoute tes liens dans l'éditeur. Ta page est en ligne immédiatement à l'adresse orbite.sooladex.com/tonpseudo."}},
+{"@type":"Question","name":"Où mettre mon lien Orbite ?","acceptedAnswer":{"@type":"Answer","text":"Dans la bio de ton profil Instagram, TikTok, YouTube, X ou LinkedIn, dans ta signature d'e-mail ou sur ta carte de visite."}}
+]}]}</script>
+<!--/SEO-->
 <meta name="theme-color" content="#120c0b">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ff5a36'/%3E%3Cstop offset='1' stop-color='%23ffc46b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='14' fill='url(%23g)'/%3E%3Cellipse cx='32' cy='32' rx='28' ry='10' fill='none' stroke='%23ffc46b' stroke-width='3' transform='rotate(-25 32 32)'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://wcmirrrcpiblcywjfjtl.supabase.co" crossorigin>
+<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
 /* Layout : WebGL plein écran derrière ; accueil (hero + réservation du pseudo), page publique en colonne de verre, éditeur = page + tiroir à droite */
@@ -70,6 +100,20 @@ a{color:inherit}
 .avail.ok{color:var(--ok)} .avail.bad{color:var(--bad)}
 .points{display:flex;flex-wrap:wrap;gap:10px 26px;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:10px 0 0;padding:0;list-style:none}
 .points li::before{content:"✦ ";color:var(--c2)}
+.more{width:100%;max-width:1160px;margin:0 auto;padding-block:48px 24px;display:flex;flex-direction:column;gap:22px}
+.more h2{font-family:var(--f-display);font-weight:800;font-size:clamp(28px,4.4vw,44px);letter-spacing:-.035em;line-height:1;margin:24px 0 0;max-width:20ch;text-wrap:balance}
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;counter-reset:s}
+.steps li{counter-increment:s;display:flex;flex-direction:column;gap:6px;padding:20px;border:1px solid var(--line);border-radius:18px;background:var(--card);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);min-width:0}
+.steps li::before{content:"0" counter(s);font-family:var(--f-mono);font-size:12px;color:var(--c2);letter-spacing:.1em}
+.steps b{font-size:18px}
+.steps span{color:var(--muted);font-size:14.5px}
+.faq{display:flex;flex-direction:column;gap:8px;max-width:760px}
+.faq details{border:1px solid var(--line);border-radius:14px;background:var(--card);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.faq summary{cursor:pointer;padding:15px 18px;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--c2);font-family:var(--f-mono)}
+.faq details[open] summary::after{content:"–"}
+.faq p{margin:0;padding:0 18px 16px;color:var(--muted);max-width:65ch}
 .home footer{width:100%;max-width:1160px;margin:0 auto;padding-block:24px;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 @media (max-width:520px){.claim{padding:8px 8px 8px 16px;border-radius:22px}.claim .pre{font-size:11.5px}.claim .pill{width:100%}}
 
@@ -259,9 +303,9 @@ body.edit .wrap{padding-top:calc(min(22vh,180px) + 40px)}
     </div>
   </nav>
   <div class="hero">
-    <p class="eyebrow"><i></i>Page de liens · 3D · gratuite</p>
+    <p class="eyebrow"><i></i>Lien en bio · 3D · gratuit</p>
     <h1>Tous tes liens, <em>en orbite.</em></h1>
-    <p class="lede">Une page de liens avec une forme 3D vivante, une intro cinématique et ton identité : couleurs, polices, couvertures. Prête en deux minutes.</p>
+    <p class="lede">Ta page « lien en bio » avec une forme 3D vivante, une intro cinématique et ton identité : couleurs, polices, couvertures. L'alternative créative à Linktree, prête en deux minutes.</p>
     <form class="claim" id="claimForm" novalidate>
       <span class="pre" id="claimPre">orbite/</span>
       <input type="text" id="claimInput" placeholder="tonpseudo" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="30" aria-label="Ton pseudo">
@@ -272,6 +316,22 @@ body.edit .wrap{padding-top:calc(min(22vh,180px) + 40px)}
       <li>Forme 3D interactive</li><li>8 polices, couleurs libres</li><li>Couvertures et grilles</li><li>Compteur de visites</li>
     </ul>
   </div>
+  <section class="more" aria-labelledby="howTitle">
+    <h2 id="howTitle">Une page de liens qu'on a envie d'ouvrir</h2>
+    <ol class="steps">
+      <li><b>Réserve ton pseudo</b><span>Ton adresse courte, à coller dans ta bio Instagram, TikTok ou YouTube.</span></li>
+      <li><b>Ajoute tes liens</b><span>Réseaux, boutique, portfolio, vidéos : jusqu'à 40 liens, avec une image de couverture pour chacun.</span></li>
+      <li><b>Donne-lui ton style</b><span>4 formes 3D, 5 ambiances, couleurs libres, 14 polices, grille ou grandes cartes. Tout s'enregistre en direct.</span></li>
+    </ol>
+    <h2 id="faqTitle">Questions fréquentes</h2>
+    <div class="faq">
+      <details><summary>Qu'est-ce qu'Orbite ?</summary><p>Orbite est une page « lien en bio » : une seule adresse qui rassemble tous tes liens (Instagram, TikTok, YouTube, boutique, portfolio). Elle s'affiche avec une forme 3D animée et une intro cinématique.</p></details>
+      <details><summary>Orbite est-il gratuit ?</summary><p>Oui. La création du compte, la page, la personnalisation et le compteur de visites sont gratuits.</p></details>
+      <details><summary>Quelle différence avec Linktree ?</summary><p>Orbite fait le même travail, mais la page est immersive : forme 3D interactive, intro animée, 8 polices de titre, couleurs libres, couvertures d'image et trois dispositions de liens.</p></details>
+      <details><summary>Comment créer ma page Orbite ?</summary><p>Réserve ton pseudo plus haut, crée ton compte avec ton e-mail, puis ajoute tes liens dans l'éditeur. Ta page est en ligne immédiatement à l'adresse orbite.sooladex.com/tonpseudo.</p></details>
+      <details><summary>Où mettre mon lien Orbite ?</summary><p>Dans la bio de ton profil Instagram, TikTok, YouTube, X ou LinkedIn, dans ta signature d'e-mail ou sur ta carte de visite.</p></details>
+    </div>
+  </section>
   <footer><span>Orbite · fait au Maroc</span><span class="mono">Bouge la souris, clique la forme</span></footer>
 </section>
 
@@ -294,7 +354,7 @@ body.edit .wrap{padding-top:calc(min(22vh,180px) + 40px)}
 </header>
 
 <!-- Page de liens -->
-<main class="wrap gutter" id="wrap" hidden>
+<!--WRAP--><main class="wrap gutter" id="wrap" hidden>
   <div class="cover" id="cover" hidden><img id="coverImg" alt=""></div>
   <header class="profile">
     <div class="avatar" id="avatar" style="--d:0"></div>
@@ -304,7 +364,7 @@ body.edit .wrap{padding-top:calc(min(22vh,180px) + 40px)}
   </header>
   <nav class="links" id="links" aria-label="Liens"></nav>
   <div class="made"><a href="/" id="madeLink">✦ Crée ta propre Orbite</a></div>
-</main>
+</main><!--/WRAP-->
 
 <button class="pill fab" id="editBtn" aria-controls="panel" aria-expanded="false" hidden>Personnaliser</button>
 
@@ -426,16 +486,16 @@ body.edit .wrap{padding-top:calc(min(22vh,180px) + 40px)}
 
 <div class="toast" id="toast" role="status"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
-(() => {
+document.addEventListener('DOMContentLoaded', () => {
 /* ================= Config ================= */
 const SB_URL = 'https://wcmirrrcpiblcywjfjtl.supabase.co';
 const SB_KEY = 'sb_publishable_DCAxCrnRVNXx5tr1APtiiA_DrMpblIP';
 const MEDIA = SB_URL + '/storage/v1/object/public/media/';
 const HOST = location.host;
-const RESERVED = new Set(['app','api','admin','edit','editer','login','connexion','signup','inscription','compte','account','settings','orbite','www','help','aide','about','terms','privacy','static','assets','media','u','new','dashboard','explore','sooladex']);
+const RESERVED = new Set(['app','api','admin','edit','editer','login','connexion','signup','inscription','compte','account','settings','orbite','www','help','aide','about','terms','privacy','static','assets','media','u','new','dashboard','explore']);
 const SLUG_RE = /^[a-z0-9][a-z0-9_-]{2,29}$/;
 
 let sb = null;
@@ -571,7 +631,7 @@ function renderLinks(){
   if (!S.links.length){ box.innerHTML = `<div class="empty">${MODE==='edit' ? 'Aucun lien pour l’instant. Ajoute le premier dans le panneau.' : 'Aucun lien pour l’instant.'}</div>`; return; }
   box.innerHTML = S.links.map((l,i)=>{
     const href = safeUrl(l.url);
-    return `<a class="card" ${href ? `href="${esc(href)}" target="_blank" rel="noopener noreferrer nofollow"` : 'role="link" aria-disabled="true"'} style="--d:${i+4}">
+    return `<a class="card" ${href ? `href="${esc(href)}" target="_blank" rel="noopener noreferrer nofollow ugc"` : 'role="link" aria-disabled="true"'} style="--d:${i+4}">
       <span class="thumb">${l.img ? `<img src="${esc(l.img)}" alt="" loading="lazy">` : esc(((l.title||'?').trim()[0]||'?').toUpperCase())}</span>
       <span class="ct"><span class="t">${esc(l.title||'Sans titre')}</span><span class="u mono">${esc(prettyUrl(l.url))}</span></span>
       <span class="arrow" aria-hidden="true">↗</span><span class="glare"></span>
@@ -1046,7 +1106,8 @@ async function boot(){
   MODE='page';
   const slug = cleanSlug(path);
   if(!sb || slugProblem(slug)){ showNotFound(slug); return; }
-  const { data:row } = await sb.from('pages').select('slug,config,user_id').eq('slug', slug).maybeSingle();
+  let row = (window.__PAGE__ && window.__PAGE__.slug === slug) ? window.__PAGE__ : null;
+  if(!row){ const r = await sb.from('pages').select('slug,config,user_id').eq('slug', slug).maybeSingle(); row = r.data; }
   if(!row){ showNotFound(slug); return; }
   S=sanitize(row.config, row.slug); SLUG=row.slug;
   if(GL){ GL.setShape(); GL.setParticles(); }
@@ -1067,7 +1128,7 @@ function showNotFound(slug){
 (function(){ const c=new URLSearchParams(location.search).get('claim'); if(c){ $('claimInput').value=cleanSlug(c); $('claimInput').dispatchEvent(new Event('input')); } })();
 
 boot();
-})();
+});
 </script>
 </body>
 </html>

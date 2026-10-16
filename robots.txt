@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /edit
+Disallow: /api/
+
+Sitemap: https://orbite.sooladex.com/sitemap.xml

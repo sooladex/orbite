@@ -1,5 +1,18 @@
 {
+  "functions": {
+    "api/page.js": { "includeFiles": "index.html" }
+  },
+  "redirects": [
+    { "source": "/:path*", "has": [{ "type": "host", "value": "orbite-ten.vercel.app" }], "destination": "https://orbite.sooladex.com/:path*", "permanent": true }
+  ],
   "rewrites": [
-    { "source": "/((?!.*\\.).*)", "destination": "/index.html" }
+    { "source": "/sitemap.xml", "destination": "/api/sitemap" },
+    { "source": "/edit", "destination": "/index.html" },
+    { "source": "/:slug([^/.]+)", "destination": "/api/page?slug=:slug" }
+  ],
+  "headers": [
+    { "source": "/edit", "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }] },
+    { "source": "/index.html", "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }] },
+    { "source": "/(og.png|apple-touch-icon.png)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800, immutable" }] }
   ]
 }
