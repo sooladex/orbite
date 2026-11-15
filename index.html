@@ -38,9 +38,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ff5a36'/%3E%3Cstop offset='1' stop-color='%23ffc46b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='14' fill='url(%23g)'/%3E%3Cellipse cx='32' cy='32' rx='28' ry='10' fill='none' stroke='%23ffc46b' stroke-width='3' transform='rotate(-25 32 32)'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://wcmirrrcpiblcywjfjtl.supabase.co" crossorigin>
 <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
 /* Layout : WebGL plein écran derrière ; accueil (hero + réservation du pseudo), page publique en colonne de verre, éditeur = page + tiroir à droite */
@@ -453,7 +451,7 @@ body.edit .wrap{padding-top:calc(min(22vh,180px) + 40px)}
       <button class="btn" id="saveSlug">Changer d'adresse</button>
     </div>
     <p class="hint" id="acctEmail"></p>
-    <div class="av-row"><button class="btn" id="logout">Se déconnecter</button><button class="btn danger" id="delPage">Supprimer ma page</button></div>
+    <div class="av-row"><button class="btn" id="logout">Se déconnecter</button><button class="btn danger" id="delPage">Supprimer mon compte</button></div>
   </section>
 </aside>
 
@@ -488,19 +486,21 @@ body.edit .wrap{padding-top:calc(min(22vh,180px) + 40px)}
 <div class="toast" id="toast" role="status"></div>
 
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 /* ================= Config ================= */
-const SB_URL = 'https://wcmirrrcpiblcywjfjtl.supabase.co';
-const SB_KEY = 'sb_publishable_DCAxCrnRVNXx5tr1APtiiA_DrMpblIP';
-const MEDIA = SB_URL + '/storage/v1/object/public/media/';
+// Toutes les données passent par l'API d'Orbite (/api/app), qui parle à la base.
+async function api(op, data){
+  let r;
+  try{ r = await fetch('/api/app?op='+op, { method:'POST', credentials:'same-origin', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data||{}) }); }
+  catch(e){ return { ok:false, status:0, error:'Pas de connexion. Vérifie ton réseau et réessaie.' }; }
+  let j={}; try{ j = await r.json(); }catch(e){}
+  return Object.assign({ ok: r.ok, status: r.status }, j, r.ok ? {} : { error: j.error || 'Le serveur ne répond pas. Réessaie dans un instant.' });
+}
 const HOST = location.host;
 const RESERVED = new Set(['app','api','admin','edit','editer','login','connexion','signup','inscription','compte','account','settings','orbite','www','help','aide','about','terms','privacy','static','assets','media','u','new','dashboard','explore']);
 const SLUG_RE = /^[a-z0-9][a-z0-9_-]{2,29}$/;
 
-let sb = null;
-try { sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true } }); } catch(e) {}
 
 const PRESETS = {
   braise:{label:'Braise', bg:'#120c0b', fg:'#f6ece6', muted:'#b49c92', c1:'#ff5a36', c2:'#ffc46b'},
@@ -548,7 +548,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const HEX = /^#[0-9a-f]{6}$/i;
 const clamp = (n,a,b,d) => { n = Number(n); return Number.isFinite(n) ? Math.min(b, Math.max(a, n)) : d; };
 const str = (v,max,d='') => typeof v === 'string' ? v.slice(0,max) : d;
-const okImg = u => typeof u === 'string' && u.startsWith(MEDIA) ? u : null;
+const okImg = u => typeof u === 'string' && /^\/m\/[0-9a-f-]{36}$/.test(u) ? u : null;
 function safeUrl(u){
   u = (u || '').trim(); if(!u) return '';
   if(!/^[a-z][a-z0-9+.-]*:/i.test(u)) u = 'https://' + u;
@@ -662,10 +662,10 @@ document.querySelectorAll('#claimPre,#slugPre,#slugPre2').forEach(el=>el.textCon
 let claimT, claimSeq=0;
 async function checkSlug(s){
   const prob = slugProblem(s); if(prob) return {ok:false, msg:prob};
-  if(!sb) return {ok:true, msg:''};
-  const { data, error } = await sb.from('pages').select('slug').eq('slug', s).maybeSingle();
-  if(error) return {ok:true, msg:''};
-  return data ? {ok:false, msg:`${HOST}/${s} est déjà pris.`} : {ok:true, msg:`${HOST}/${s} est libre ✓`};
+  const r = await api('check-slug', { slug:s });
+  if(!r.ok) return {ok:true, msg:''};
+  if(r.problem) return {ok:false, msg:r.problem};
+  return r.free ? {ok:true, msg:`${HOST}/${s} est libre ✓`} : {ok:false, msg:`${HOST}/${s} est déjà pris.`};
 }
 $('claimInput').addEventListener('input', e=>{
   const s = cleanSlug(e.target.value); if(s !== e.target.value) e.target.value = s;
@@ -701,31 +701,15 @@ function openAuth(mode){
 $('authSwitch').onclick=()=>openAuth(authMode==='signup'?'login':'signup');
 $('authClose').onclick=()=>{ $('authModal').hidden=true; };
 $('authModal').addEventListener('click',e=>{ if(e.target===e.currentTarget) $('authModal').hidden=true; });
-function frErr(m){
-  m = String(m||'');
-  if(/invalid login/i.test(m)) return 'E-mail ou mot de passe incorrect.';
-  if(/already registered|already exists/i.test(m)) return 'Un compte existe déjà avec cet e-mail. Connecte-toi.';
-  if(/password.*(6|short|least)/i.test(m)) return 'Le mot de passe doit faire au moins 6 caractères.';
-  if(/email.*(invalid|valid)/i.test(m)) return 'Cette adresse e-mail n’est pas valide.';
-  if(/not confirmed/i.test(m)) return 'Confirme ton e-mail avec le lien reçu, puis reconnecte-toi.';
-  if(/rate|too many/i.test(m)) return 'Trop de tentatives. Réessaie dans quelques minutes.';
-  return 'Impossible pour le moment : ' + m;
-}
 $('authForm').addEventListener('submit', async e=>{
   e.preventDefault();
-  if(!sb){ $('authErr').textContent='Le service de comptes ne répond pas. Recharge la page.'; return; }
   const email=$('aEmail').value.trim(), password=$('aPass').value;
   if(!email || !password){ $('authErr').textContent='Remplis l’e-mail et le mot de passe.'; return; }
   const btn=$('authBtn'); btn.disabled=true; $('authErr').textContent='';
-  try{
-    const res = authMode==='signup'
-      ? await sb.auth.signUp({ email, password, options:{ emailRedirectTo: location.origin + '/edit' } })
-      : await sb.auth.signInWithPassword({ email, password });
-    if(res.error) throw res.error;
-    if(!res.data.session){ $('authErr').style.color='var(--ok)'; $('authErr').textContent='Compte créé. Ouvre le lien reçu par e-mail pour l’activer.'; return; }
-    location.href='/edit';
-  }catch(err){ $('authErr').style.color=''; $('authErr').textContent=frErr(err.message); }
-  finally{ btn.disabled=false; }
+  const res = await api(authMode==='signup' ? 'signup' : 'login', { email, password });
+  btn.disabled=false;
+  if(!res.ok){ $('authErr').textContent = res.error; return; }
+  location.href='/edit';
 });
 
 /* ================= Éditeur ================= */
@@ -738,9 +722,10 @@ function save(){
 async function flush(){
   if(saving){ pending=true; return; }
   saving=true; setStatus('Enregistrement…','saving');
-  const { error } = await sb.from('pages').update({ config: S }).eq('user_id', USER.id);
+  const res = await api('save', { config: S });
   saving=false;
-  if(error){ setStatus('Échec, nouvel essai…','err'); clearTimeout(saveT); saveT=setTimeout(flush,3000); return; }
+  if(res.status===401){ setStatus('Déconnecté','err'); openAuth('login'); return; }
+  if(!res.ok){ setStatus('Échec, nouvel essai…','err'); clearTimeout(saveT); saveT=setTimeout(flush,3000); return; }
   setStatus('Enregistré ✓');
   if(pending){ pending=false; flush(); }
 }
@@ -857,11 +842,11 @@ async function upload(file,w,h){
   toast('Envoi de l’image…');
   try{
     const blob=await toBlob(file,w,h);
-    const path=`${USER.id}/${Date.now()}-${Math.random().toString(36).slice(2,8)}.jpg`;
-    const { error } = await sb.storage.from('media').upload(path, blob, { contentType:'image/jpeg', cacheControl:'31536000' });
-    if(error) throw error;
-    return MEDIA + path;
-  }catch(e){ toast(/img|blob/.test(e.message) ? 'Image illisible, essaie un JPG ou un PNG' : 'Envoi impossible, réessaie'); return null; }
+    const data=await new Promise((ok,ko)=>{ const fr=new FileReader(); fr.onload=()=>ok(fr.result); fr.onerror=()=>ko(new Error('read')); fr.readAsDataURL(blob); });
+    const res=await api('upload', { data });
+    if(!res.ok){ toast(res.error); return null; }
+    return res.url;
+  }catch(e){ toast('Image illisible, essaie un JPG ou un PNG'); return null; }
 }
 $('avFile').onchange=async e=>{ const f=e.target.files[0]; e.target.value=''; if(!f) return; const u=await upload(f,400,400); if(u){ S.avatar=u; renderProfile(); save(); toast('Photo mise à jour'); } };
 $('avClear').onclick=()=>{ S.avatar=null; renderProfile(); save(); };
@@ -876,8 +861,9 @@ $('linkRows').addEventListener('change',async e=>{
 async function claimSlug(s){
   const prob=slugProblem(s); if(prob) return prob;
   const cfg = defaults(s); cfg.name = s;
-  const { error } = await sb.from('pages').insert({ user_id: USER.id, slug: s, config: cfg });
-  if(error){ return error.code==='23505' ? (/pkey/.test(error.message) ? 'Tu as déjà une page.' : 'Ce pseudo vient d’être pris. Essaie-en un autre.') : 'Pseudo refusé : ' + error.message; }
+  const res = await api('claim', { slug: s, config: cfg });
+  if(!res.ok) return res.error;
+  try{ localStorage.setItem('orbite-own', s); }catch(_){}
   S = sanitize(cfg, s); SLUG = s; VIEWS = 0;
   try{ sessionStorage.removeItem('orbite-claim'); }catch(_){}
   return '';
@@ -894,17 +880,19 @@ $('fSlug').addEventListener('input',e=>{ const s=cleanSlug(e.target.value); if(s
 $('saveSlug').onclick=async()=>{
   const s=cleanSlug($('fSlug').value); if(s===SLUG) return;
   const prob=slugProblem(s); if(prob){ $('slugErr').textContent=prob; return; }
-  const { error } = await sb.from('pages').update({ slug:s }).eq('user_id', USER.id);
-  if(error){ $('slugErr').textContent = error.code==='23505' ? 'Ce pseudo est déjà pris.' : 'Changement impossible : ' + error.message; return; }
+  const res = await api('rename', { slug:s });
+  if(!res.ok){ $('slugErr').textContent = res.error; return; }
+  try{ localStorage.setItem('orbite-own', s); }catch(_){}
   SLUG=s; setAddr(); history.replaceState(null,'','/edit'); toast(`Nouvelle adresse : ${HOST}/${s}`);
 };
-$('logout').onclick=async()=>{ await flush(); await sb.auth.signOut(); location.href='/'; };
+$('logout').onclick=async()=>{ await flush(); await api('logout'); location.href='/'; };
 let delArm=false;
 $('delPage').onclick=async e=>{
-  if(!delArm){ delArm=true; e.target.textContent='Confirmer : supprimer définitivement'; setTimeout(()=>{ delArm=false; e.target.textContent='Supprimer ma page'; },4000); return; }
-  const { error } = await sb.from('pages').delete().eq('user_id', USER.id);
-  if(error){ toast('Suppression impossible'); return; }
-  MODE='home'; await sb.auth.signOut(); location.href='/';
+  if(!delArm){ delArm=true; e.target.textContent='Confirmer : supprimer définitivement'; setTimeout(()=>{ delArm=false; e.target.textContent='Supprimer mon compte'; },4000); return; }
+  const res = await api('delete');
+  if(!res.ok){ toast(res.error); return; }
+  try{ localStorage.removeItem('orbite-own'); }catch(_){}
+  MODE='home'; location.href='/';
 };
 
 function startEditor(){
@@ -1076,9 +1064,9 @@ async function boot(){
   try { GL=initGL(); } catch(e){ GL=null; $('gl').hidden=true; $('fallback').hidden=false; }
   applyTheme();
 
-  let session=null;
-  if(sb){ try{ session=(await sb.auth.getSession()).data.session; }catch(_){} }
-  USER = session ? session.user : null;
+  // Session : on demande au serveur qui est connecté (cookie HttpOnly), sauf sur les pages publiques
+  let ME = null;
+  if(path==='' || path==='edit'){ const r = await api('me'); if(r.ok){ ME = r; USER = r.user; } }
 
   if(path==='' ){
     MODE='home'; S=defaults('Orbite'); S.shape='noeud'; S.amp=28; if(GL) GL.setShape(); applyTheme();
@@ -1091,9 +1079,8 @@ async function boot(){
 
   if(path==='edit'){
     if(!USER){ MODE='home'; show('home'); openAuth('login'); return; }
-    const { data:row, error } = await sb.from('pages').select('*').eq('user_id', USER.id).maybeSingle();
-    if(error){ show('notfound'); $('nfTitle').textContent='Connexion impossible'; return; }
-    if(row){ S=sanitize(row.config, row.slug); SLUG=row.slug; VIEWS=row.views||0; startEditor(); return; }
+    const row = ME.page;
+    if(row){ try{ localStorage.setItem('orbite-own', row.slug); }catch(_){} S=sanitize(row.config, row.slug); SLUG=row.slug; VIEWS=row.views||0; startEditor(); return; }
     // Pas encore de page : choix du pseudo
     MODE='edit'; show('loading');
     let claim=''; try{ claim=sessionStorage.getItem('orbite-claim')||''; }catch(_){}
@@ -1106,14 +1093,13 @@ async function boot(){
   // Page publique
   MODE='page';
   const slug = cleanSlug(path);
-  if(!sb || slugProblem(slug)){ showNotFound(slug); return; }
-  let row = (window.__PAGE__ && window.__PAGE__.slug === slug) ? window.__PAGE__ : null;
-  if(!row){ const r = await sb.from('pages').select('slug,config,user_id').eq('slug', slug).maybeSingle(); row = r.data; }
+  const row = (window.__PAGE__ && window.__PAGE__.slug === slug) ? window.__PAGE__ : null;
   if(!row){ showNotFound(slug); return; }
   S=sanitize(row.config, row.slug); SLUG=row.slug;
   if(GL){ GL.setShape(); GL.setParticles(); }
   renderAll(); show('wrap');
-  if(!(USER && USER.id===row.user_id)) sb.rpc('count_view',{ p_slug: slug }).then(()=>{},()=>{});
+  let own=''; try{ own=localStorage.getItem('orbite-own')||''; }catch(_){}
+  if(own!==slug) api('view', { slug });
   const go=()=>$('wrap').classList.add('play');
   if(S.intro) playIntro(S.name, go); else go();
 }

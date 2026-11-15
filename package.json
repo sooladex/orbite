@@ -1,0 +1,9 @@
+{
+  "name": "orbite",
+  "private": true,
+  "description": "Orbite — page de liens en 3D",
+  "engines": { "node": "22.x" },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.0"
+  }
+}

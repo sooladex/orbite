@@ -3,11 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const SITE = (process.env.SITE_URL || 'https://orbite.sooladex.com').replace(/\/$/, '');
-const SB_URL = 'https://wcmirrrcpiblcywjfjtl.supabase.co';
-const SB_KEY = 'sb_publishable_DCAxCrnRVNXx5tr1APtiiA_DrMpblIP';
-const MEDIA = SB_URL + '/storage/v1/object/public/media/';
-const SLUG_RE = /^[a-z0-9][a-z0-9_-]{2,29}$/;
+const { sql, SITE, SLUG_RE, okImg, absImg } = require('./_lib');
 
 let TEMPLATE = null;
 function template() {
@@ -17,7 +13,6 @@ function template() {
 
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const clip = (s, n) => { s = String(s || '').replace(/\s+/g, ' ').trim(); return s.length > n ? s.slice(0, n - 1).trimEnd() + '…' : s; };
-const okImg = u => (typeof u === 'string' && u.startsWith(MEDIA)) ? u : null;
 const jsonForScript = o => JSON.stringify(o).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
 function safeUrl(u) {
   u = String(u || '').trim(); if (!u) return '';
@@ -72,16 +67,13 @@ module.exports = async (req, res) => {
   const raw = String((req.query && req.query.slug) || '').toLowerCase();
   const slug = raw.replace(/[^a-z0-9_-]/g, '');
   let html = template();
-  let row = null;
+  let row = null, dbError = false;
 
   if (SLUG_RE.test(slug)) {
     try {
-      const r = await fetch(`${SB_URL}/rest/v1/pages?slug=eq.${encodeURIComponent(slug)}&select=slug,config,user_id,updated_at`, {
-        headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` }
-      });
-      if (r.ok) { const rows = await r.json(); row = rows[0] || null; }
-      else { res.setHeader('Cache-Control', 'no-store'); }
-    } catch (e) { /* le navigateur réessaiera côté client */ }
+      const rows = await sql`select slug, config, user_id, updated_at from pages where slug = ${slug}`;
+      row = rows[0] || null;
+    } catch (e) { dbError = true; console.error('[orbite page]', e && e.message); }
   }
 
   const url = `${SITE}/${slug}`;
@@ -93,7 +85,7 @@ module.exports = async (req, res) => {
     const links = (Array.isArray(c.links) ? c.links : []);
     const titles = links.map(l => clip(l && l.title, 30)).filter(Boolean).slice(0, 4).join(', ');
     const desc = clip(bio ? `${bio} — Tous les liens de ${name} sur Orbite.` : `Tous les liens de ${name} (@${row.slug})${titles ? ' : ' + titles : ''}. Page Orbite.`, 158);
-    const image = okImg(c.cover) || okImg(c.avatar) || `${SITE}/og.png`;
+    const image = absImg(c.cover) || absImg(c.avatar) || `${SITE}/og.png`;
     const sameAs = links.map(l => safeUrl(l && l.url)).filter(u => /^https?:/.test(u)).slice(0, 20);
     head = headFor({
       title: `${name} (@${row.slug}) · Orbite`,
@@ -104,13 +96,13 @@ module.exports = async (req, res) => {
         '@context': 'https://schema.org', '@type': 'ProfilePage', url, name: `${name} (@${row.slug})`,
         inLanguage: 'fr-FR', dateModified: row.updated_at,
         isPartOf: { '@type': 'WebSite', '@id': `${SITE}/#site`, url: `${SITE}/`, name: 'Orbite' },
-        mainEntity: { '@type': 'Person', name, alternateName: '@' + row.slug, url, description: bio || undefined, image: okImg(c.avatar) || undefined, sameAs: sameAs.length ? sameAs : undefined }
+        mainEntity: { '@type': 'Person', name, alternateName: '@' + row.slug, url, description: bio || undefined, image: absImg(c.avatar) || undefined, sameAs: sameAs.length ? sameAs : undefined }
       }
     });
     html = html
       .replace(/<!--WRAP-->[\s\S]*?<!--\/WRAP-->/, bodyFor(row.slug, c))
       .replace('id="loading">', 'id="loading" hidden>')
-      .replace('<script defer src="https://cdnjs', `<script>window.__PAGE__=${jsonForScript({ slug: row.slug, config: c, user_id: row.user_id })};</script>\n<script defer src="https://cdnjs`);
+      .replace('<script defer src="https://cdnjs', `<script>window.__PAGE__=${jsonForScript({ slug: row.slug, config: c })};</script>\n<script defer src="https://cdnjs`);
     res.statusCode = 200;
     res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=600');
   } else {
@@ -120,8 +112,8 @@ module.exports = async (req, res) => {
       url, image: `${SITE}/og.png`, imageAlt: 'Orbite, page de liens en 3D', large: true,
       robots: 'noindex,follow', type: 'website', jsonld: null
     });
-    res.statusCode = 404;
-    res.setHeader('Cache-Control', 'public, s-maxage=30');
+    res.statusCode = dbError ? 503 : 404;
+    res.setHeader('Cache-Control', dbError ? 'no-store' : 'public, s-maxage=30');
   }
 
   html = html.replace(/<!--SEO-->[\s\S]*?<!--\/SEO-->/, head);
