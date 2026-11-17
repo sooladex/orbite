@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const { sql, SITE, SLUG_RE, okImg, absImg } = require('./_lib');
+const { sql, SITE, SLUG_RE, okImg, absImg, cleanUrl } = require('./_lib');
 
 let TEMPLATE = null;
 function template() {
@@ -50,6 +50,11 @@ function bodyFor(slug, c) {
     const href = safeUrl(l && l.url); const t = clip(l && l.title, 60) || 'Sans titre'; const img = okImg(l && l.img);
     return `<a class="card" ${href ? `href="${esc(href)}" target="_blank" rel="noopener noreferrer nofollow ugc"` : 'role="link" aria-disabled="true"'} style="--d:${i + 4}"><span class="thumb">${img ? `<img src="${esc(img)}" alt="" loading="lazy">` : esc((t[0] || '?').toUpperCase())}</span><span class="ct"><span class="t">${esc(t)}</span><span class="u mono">${esc(pretty(l && l.url))}</span></span><span class="arrow" aria-hidden="true">↗</span><span class="glare"></span></a>`;
   }).join('');
+  const sites = (Array.isArray(c.sites) ? c.sites : []).slice(0, 12).map(x => ({ ...x, url: cleanUrl(x && x.url) })).filter(x => x.url);
+  const host = u => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return ''; } };
+  const siteCards = sites.map(x => { const h = host(x.url), n = clip(x.title, 60) || h;
+    return `<a class="site" href="${esc(x.url)}" target="_blank" rel="noopener noreferrer nofollow ugc"><div class="sframe"><div class="sbar"><i></i><i></i><i></i><u>${esc(h)}</u></div><div class="sshot"><span class="ph">${esc(n)}</span><img src="/api/shot?u=${encodeURIComponent(x.url)}" alt="Aperçu de ${esc(n)}" loading="lazy" class="ok"></div></div><div class="scap"><div class="ct"><span class="t">${esc(n)}</span>${x.desc ? `<span class="d">${esc(clip(x.desc, 120))}</span>` : ''}</div><span class="arrow" aria-hidden="true">↗</span></div></a>`; }).join('');
+  const sitesBlock = `<section class="sites" id="sites" aria-label="Sites" style="--d:4"${sites.length ? '' : ' hidden'}>${sites.length ? `<div class="sites-h"><b>${esc(clip(c.sitesTitle, 40) || 'Mes sites')}</b><span>${sites.length} site${sites.length > 1 ? 's' : ''}</span></div><div class="sites-track${sites.length === 1 ? ' solo' : ''}">${siteCards}</div>` : ''}</section>`;
   return `<main class="wrap gutter${cover ? ' has-cover' : ''}" id="wrap">
   <div class="cover" id="cover"${cover ? '' : ' hidden'}><img id="coverImg" alt="Couverture de ${esc(name)}"${cover ? ` src="${esc(cover)}"` : ''}></div>
   <header class="profile">
@@ -58,6 +63,7 @@ function bodyFor(slug, c) {
     <p class="bio" id="bio" style="--d:2"${c.bio ? '' : ' hidden'}>${esc(clip(c.bio, 160))}</p>
     <p class="meta mono" style="--d:3"><i></i><span id="metaTxt">@${esc(slug)} · ${links.length} lien${links.length > 1 ? 's' : ''}</span></p>
   </header>
+  ${sitesBlock}
   <nav class="links" id="links" aria-label="Liens de ${esc(name)}">${items || '<div class="empty">Aucun lien pour l’instant.</div>'}</nav>
   <div class="made"><a href="/" id="madeLink">✦ Crée ta propre Orbite</a></div>
 </main>`;

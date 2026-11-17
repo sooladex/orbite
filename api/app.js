@@ -86,7 +86,12 @@ module.exports = async (req, res) => {
         return json(res, 200, { ok: true, slug: s });
       }
       case 'save': {
-        const txt = JSON.stringify(b.config || {});
+        const cfg = (b.config && typeof b.config === 'object') ? b.config : {};
+        // « Mes sites » : 12 au maximum, adresses normalisées (elles servent de clé aux aperçus)
+        if (Array.isArray(cfg.sites)) cfg.sites = cfg.sites.slice(0, 12).map(x => ({
+          title: String((x && x.title) || '').slice(0, 60), url: L.cleanUrl(x && x.url), desc: String((x && x.desc) || '').slice(0, 120)
+        }));
+        const txt = JSON.stringify(cfg);
         if (txt.length > 60000) return json(res, 413, { error: 'Page trop lourde.' });
         const r = await sql`update pages set config = ${txt}::jsonb, updated_at = now() where user_id = ${user.id} returning slug`;
         return r.length ? json(res, 200, { ok: true }) : json(res, 404, { error: 'Page introuvable.' });

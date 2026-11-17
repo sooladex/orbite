@@ -2,6 +2,9 @@
   "functions": {
     "api/page.js": {
       "includeFiles": "index.html"
+    },
+    "api/shot.js": {
+      "maxDuration": 30
     }
   },
   "redirects": [

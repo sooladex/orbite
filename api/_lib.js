@@ -46,6 +46,19 @@ async function currentUser(req) {
   return rows[0] || null;
 }
 
+// Adresse publique http(s) d'un site (pas d'adresse locale ou privée), forme normalisée.
+function cleanUrl(u) {
+  u = String(u || '').trim(); if (!u || u.length > 500) return '';
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(u)) u = 'https://' + u;
+  try {
+    const p = new URL(u);
+    if (!['http:', 'https:'].includes(p.protocol)) return '';
+    // pas d'adresses locales ou privées
+    if (/^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|0\.|\[)/i.test(p.hostname) || !p.hostname.includes('.')) return '';
+    return p.href;
+  } catch (e) { return ''; }
+}
+
 function slugProblem(s) {
   if (!s) return 'Choisis un pseudo.';
   if (s.length < 3) return '3 caractères minimum.';
@@ -61,4 +74,4 @@ function json(res, status, body) {
   res.end(JSON.stringify(body));
 }
 
-module.exports = { sql, SITE, SLUG_RE, RESERVED, okImg, absImg, hashPassword, checkPassword, sha, readCookie, newSession, clearSession, currentUser, slugProblem, json, COOKIE };
+module.exports = { cleanUrl, sql, SITE, SLUG_RE, RESERVED, okImg, absImg, hashPassword, checkPassword, sha, readCookie, newSession, clearSession, currentUser, slugProblem, json, COOKIE };

@@ -163,6 +163,39 @@ a{color:inherit}
 .cover::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,color-mix(in srgb,var(--bg) 70%,transparent))}
 .wrap.has-cover{padding-top:min(9vh,72px)}
 .wrap.has-cover .profile{margin-top:-86px;position:relative;z-index:1}
+/* ---------- Mes sites (aperçus réels) ---------- */
+.sites{display:flex;flex-direction:column;gap:12px}
+.sites[hidden]{display:none}
+.sites-h{display:flex;align-items:center;justify-content:space-between;gap:10px;font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.sites-h b{font-family:var(--f-display);font-size:clamp(22px,5vw,28px);letter-spacing:-.03em;text-transform:none;color:var(--fg);font-weight:800}
+.sites-track{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:10px 6% 18px;margin:0 -6%;perspective:1100px;-webkit-overflow-scrolling:touch}
+.sites-track::-webkit-scrollbar{display:none}
+.site{flex:0 0 88%;scroll-snap-align:center;position:relative;display:flex;flex-direction:column;text-decoration:none;color:var(--fg);border-radius:calc(var(--radius) + 4px);background:var(--card);border:1px solid var(--line);backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);overflow:hidden;transform:rotateY(var(--sy,0deg)) scale(var(--ss,1)) rotateX(var(--rx,0deg));transition:transform .4s cubic-bezier(.2,.8,.2,1),border-color .3s,box-shadow .3s;transform-style:preserve-3d}
+.sites-track.solo .site{flex-basis:100%}
+.site:hover,.site:focus-visible{border-color:color-mix(in srgb,var(--c2) 60%,transparent);box-shadow:0 24px 60px -24px color-mix(in srgb,var(--c1) 75%,transparent)}
+.sframe{margin:10px 10px 0;border-radius:calc(var(--radius) * .7);overflow:hidden;border:1px solid var(--line);background:color-mix(in srgb,var(--fg) 6%,var(--bg));position:relative}
+.sbar{display:flex;align-items:center;gap:5px;padding:7px 10px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--fg) 5%,transparent)}
+.sbar i{width:7px;height:7px;border-radius:50%;background:#ff5f57;flex:none}.sbar i:nth-child(2){background:#febc2e}.sbar i:nth-child(3){background:#28c840}
+.sbar u{flex:1;min-width:0;margin-left:8px;text-decoration:none;font-family:var(--f-mono);font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;padding:3px 10px;border-radius:99px;background:color-mix(in srgb,var(--fg) 7%,transparent)}
+.sshot{position:relative;aspect-ratio:16/10;overflow:hidden;background:linear-gradient(135deg,color-mix(in srgb,var(--c1) 45%,var(--bg)),color-mix(in srgb,var(--c2) 35%,var(--bg)))}
+.sshot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;opacity:0;transition:opacity .6s,transform 6s cubic-bezier(.2,.8,.2,1)}
+.sshot img.ok{opacity:1}
+.site:hover .sshot img.ok{transform:translateY(calc(-1 * var(--pan,0%)))}
+.sshot .ph{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:clamp(30px,9vw,46px);letter-spacing:-.04em;color:color-mix(in srgb,var(--fg) 80%,transparent);text-align:center;padding:0 16px;overflow-wrap:anywhere}
+.sshot .ph::after{content:"";position:absolute;left:50%;bottom:16%;width:38%;height:2px;margin-left:-19%;background:linear-gradient(90deg,transparent,var(--fg),transparent);opacity:.5;animation:scan 1.6s ease-in-out infinite}
+.sshot.done .ph::after,.sshot.fail .ph::after{display:none}
+.sshot.done .ph{opacity:0}
+@keyframes scan{50%{transform:scaleX(.3);opacity:.15}}
+.scap{display:flex;align-items:flex-end;gap:12px;padding:14px 16px 16px}
+.scap .ct{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.scap .t{font-family:var(--f-display);font-weight:800;font-size:21px;letter-spacing:-.03em;line-height:1.05;overflow-wrap:anywhere}
+.scap .d{color:var(--muted);font-size:13.5px;line-height:1.4;overflow-wrap:anywhere}
+.scap .arrow{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);transition:.3s}
+.site:hover .scap .arrow{background:var(--fg);color:var(--bg);transform:rotate(-12deg)}
+.sdots{display:flex;justify-content:center;gap:6px;margin-top:-6px}
+.sdots button{width:7px;height:7px;border-radius:99px;border:0;padding:0;background:var(--line);cursor:pointer;transition:width .35s,background .35s}
+.sdots button.on{width:22px;background:linear-gradient(90deg,var(--c1),var(--c2))}
+.play .sites{animation:rise .9s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--d,0) * 80ms + 150ms)}
 .empty{border:1px dashed var(--line);border-radius:18px;padding:22px;text-align:center;color:var(--muted)}
 .play .profile>*,.play .card,.play .cover{animation:rise .9s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--d,0) * 80ms + 150ms)}
 @keyframes rise{from{opacity:0;transform:translateY(28px) rotateX(-18deg)}}
@@ -361,6 +394,7 @@ body.edit .wrap{padding-top:calc(min(22vh,180px) + 40px)}
     <p class="bio" id="bio" style="--d:2"></p>
     <p class="meta mono" style="--d:3"><i></i><span id="metaTxt"></span></p>
   </header>
+  <section class="sites" id="sites" aria-label="Sites" style="--d:4" hidden></section>
   <nav class="links" id="links" aria-label="Liens"></nav>
   <div class="made"><a href="/" id="madeLink">✦ Crée ta propre Orbite</a></div>
 </main><!--/WRAP-->
@@ -395,6 +429,14 @@ body.edit .wrap{padding-top:calc(min(22vh,180px) + 40px)}
     </div>
     <div class="field"><label for="fName">Nom affiché</label><input type="text" id="fName" maxlength="40"></div>
     <div class="field"><label for="fBio">Bio</label><textarea id="fBio" maxlength="160"></textarea></div>
+  </section>
+
+  <section class="sec">
+    <h3>Mes sites</h3>
+    <p class="hint">Tes sites, projets ou boutiques, affichés avec un vrai aperçu de la page (capture prise automatiquement).</p>
+    <div class="field"><label for="fSitesTitle">Titre de la section</label><input type="text" id="fSitesTitle" maxlength="40" placeholder="Mes sites"></div>
+    <div id="siteRows" class="sec"></div>
+    <button class="btn" id="addSite">+ Ajouter un site</button>
   </section>
 
   <section class="sec">
@@ -537,7 +579,8 @@ function defaults(name){
     avatar:null, cover:null, preset:'braise', c1:PRESETS.braise.c1, c2:PRESETS.braise.c2, bg:null, fg:null,
     fontD:'bricolage', fontB:'instrument', layout:'liste', cardStyle:'verre', radius:18,
     shape:'bulle', amp:45, speed:40, particles:60, intro:true,
-    links:[ {title:'Instagram', url:'https://instagram.com/'}, {title:'Mon site', url:''} ]
+    links:[ {title:'Instagram', url:'https://instagram.com/'}, {title:'Mon site', url:''} ],
+    sitesTitle:'Mes sites', sites:[]
   };
 }
 
@@ -588,6 +631,10 @@ function sanitize(c, name){
     intro: c.intro !== false,
     links: (Array.isArray(c.links) ? c.links : d.links).slice(0,40).map(l => ({
       title: str(l && l.title, 60, ''), url: str(l && l.url, 500, ''), img: okImg(l && l.img) || undefined
+    })),
+    sitesTitle: str(c.sitesTitle, 40, d.sitesTitle),
+    sites: (Array.isArray(c.sites) ? c.sites : []).slice(0,12).map(x => ({
+      title: str(x && x.title, 60, ''), url: str(x && x.url, 500, ''), desc: str(x && x.desc, 120, '')
     }))
   };
 }
@@ -648,7 +695,44 @@ function renderLinks(){
     c.addEventListener('pointerleave', ()=>{ c.style.setProperty('--rx','0deg'); c.style.setProperty('--ry','0deg'); if(GL) GL.hover=0; });
   });
 }
-function renderAll(){ applyTheme(); renderProfile(); renderLinks(); }
+/* Mes sites : même normalisation que le serveur (l'adresse sert de clé à l'aperçu) */
+function siteUrl(u){
+  u=(u||'').trim(); if(!u||u.length>500) return '';
+  if(!/^[a-z][a-z0-9+.-]*:/i.test(u)) u='https://'+u;
+  try{ const p=new URL(u); if(!['http:','https:'].includes(p.protocol)) return '';
+    if(/^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|0\.|\[)/i.test(p.hostname)||!p.hostname.includes('.')) return ''; return p.href; }catch(e){ return ''; }
+}
+const host = u => { try{ return new URL(u).hostname.replace(/^www\./,''); }catch(e){ return ''; } };
+function renderSites(){
+  const box=$('sites'), list=S.sites.filter(x=>MODE==='edit' || siteUrl(x.url));
+  box.hidden=!list.length; if(!list.length){ box.innerHTML=''; return; }
+  box.innerHTML=`<div class="sites-h"><b>${esc(S.sitesTitle||'Mes sites')}</b><span>${list.length} site${list.length>1?'s':''}</span></div>
+  <div class="sites-track${list.length===1?' solo':''}" id="sitesTrack">${list.map((x,i)=>{
+    const u=siteUrl(x.url), h=host(u), name=x.title||h||'Mon site';
+    return `<a class="site" ${u?`href="${esc(u)}" target="_blank" rel="noopener noreferrer nofollow ugc"`:'role="link" aria-disabled="true"'}>
+      <div class="sframe"><div class="sbar"><i></i><i></i><i></i><u>${esc(h||'ajoute une adresse')}</u></div>
+        <div class="sshot${u?'':' fail'}"><span class="ph">${esc(name)}</span>${u?`<img src="/api/shot?u=${encodeURIComponent(u)}" alt="Aperçu de ${esc(name)}" loading="${i<2?'eager':'lazy'}" decoding="async">`:''}</div></div>
+      <div class="scap"><div class="ct"><span class="t">${esc(name)}</span>${x.desc?`<span class="d">${esc(x.desc)}</span>`:''}</div><span class="arrow" aria-hidden="true">↗</span></div>
+    </a>`; }).join('')}</div>
+  ${list.length>1?`<div class="sdots">${list.map((_,i)=>`<button aria-label="Site ${i+1}" data-sdot="${i}"${i?'':' class="on"'}></button>`).join('')}</div>`:''}`;
+  box.querySelectorAll('.sshot img').forEach(img=>{
+    const wrap=img.parentNode, site=img.closest('.site');
+    const done=()=>{ img.classList.add('ok'); wrap.classList.add('done');
+      const r=img.naturalHeight/img.naturalWidth, frame=10/16; // capture plus haute que le cadre : on la fait défiler au survol
+      if(r>frame) site.style.setProperty('--pan', Math.min(60,(1-frame/r)*100).toFixed(1)+'%'); };
+    const fail=()=>{ wrap.classList.add('fail'); img.remove(); };
+    if(img.complete) (img.naturalWidth ? done() : fail()); else { img.addEventListener('load',done); img.addEventListener('error',fail); }
+  });
+  const tr=$('sitesTrack'); if(!tr) return;
+  const flow=()=>{ const mid=tr.scrollLeft+tr.clientWidth/2; let best=0,bd=1e9;
+    [...tr.children].forEach((c,i)=>{ const cc=c.offsetLeft+c.offsetWidth/2, k=Math.max(-1,Math.min(1,(cc-mid)/c.offsetWidth));
+      if(!reduce){ c.style.setProperty('--sy',(-k*22)+'deg'); c.style.setProperty('--ss',(1-Math.abs(k)*.08).toFixed(3)); }
+      if(Math.abs(cc-mid)<bd){ bd=Math.abs(cc-mid); best=i; } });
+    box.querySelectorAll('[data-sdot]').forEach((d,i)=>d.classList.toggle('on',i===best)); };
+  tr.addEventListener('scroll',()=>requestAnimationFrame(flow),{passive:true}); requestAnimationFrame(flow);
+  box.querySelectorAll('[data-sdot]').forEach(d=>d.onclick=()=>{ const c=tr.children[+d.dataset.sdot]; tr.scrollTo({left:c.offsetLeft-(tr.clientWidth-c.offsetWidth)/2,behavior:'smooth'}); });
+}
+function renderAll(){ applyTheme(); renderProfile(); renderSites(); renderLinks(); }
 
 $('cover').addEventListener('pointermove',e=>{ if(reduce) return; const c=e.currentTarget, r=c.getBoundingClientRect(), x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5;
   c.style.setProperty('--cry',(x*8)+'deg'); c.style.setProperty('--crx',(-y*8)+'deg'); c.style.setProperty('--cx',(-x*18)+'px'); c.style.setProperty('--cy',(-y*12)+'px'); });
@@ -748,6 +832,21 @@ function renderLinkRows(){
       </div>
     </div>`).join('') || '<p class="hint">Aucun lien. Ajoute le premier ci-dessous.</p>';
 }
+function renderSiteRows(){
+  $('fSitesTitle').value=S.sitesTitle||'';
+  $('siteRows').innerHTML = S.sites.map((x,i)=>`
+    <div class="lrow">
+      <div class="inputs">
+        <input type="text" id="st-${i}" data-si="${i}" data-k="title" value="${esc(x.title)}" placeholder="Nom du site" maxlength="60" aria-label="Nom du site ${i+1}">
+        <input type="url" id="su-${i}" data-si="${i}" data-k="url" value="${esc(x.url)}" placeholder="https://monsite.com" maxlength="500" aria-label="Adresse du site ${i+1}">
+        <input type="text" data-si="${i}" data-k="desc" value="${esc(x.desc)}" placeholder="Une phrase pour le présenter (optionnel)" maxlength="120" aria-label="Description du site ${i+1}">
+      </div>
+      <div class="acts">
+        <button class="btn icon" data-sup="${i}" aria-label="Monter" ${i===0?'disabled':''}>↑</button>
+        <button class="btn icon danger" data-sdel="${i}" aria-label="Supprimer">✕</button>
+      </div>
+    </div>`).join('') || '<p class="hint">Aucun site pour l’instant.</p>';
+}
 function renderChips(){
   $('presetChips').innerHTML = Object.entries(PRESETS).map(([k,p])=>
     `<button class="chip" data-preset="${k}" aria-pressed="${S.preset===k}"><span class="sw" style="background:linear-gradient(135deg,${p.c1},${p.c2});box-shadow:inset 0 0 0 2px ${p.bg}"></span>${p.label}</button>`).join('');
@@ -766,7 +865,7 @@ function syncPanel(){
   $('fName').value=S.name; $('fBio').value=S.bio;
   [['fAmp','oAmp','amp'],['fSpeed','oSpeed','speed'],['fParticles','oParticles','particles']].forEach(([f,o,k])=>{ $(f).value=S[k]; $(o).textContent=S[k]; });
   $('fIntro').checked=S.intro; $('fSlug').value=SLUG||''; $('statViews').textContent=VIEWS.toLocaleString('fr-FR');
-  renderChips(); renderLinkRows();
+  renderChips(); renderLinkRows(); renderSiteRows();
 }
 function setAddr(){
   $('addr').innerHTML = `${esc(HOST)}/<b>${esc(SLUG)}</b>`;
@@ -799,6 +898,30 @@ $('linkRows').addEventListener('click',e=>{
   else return;
   renderLinkRows(); renderProfile(); renderLinks(); save();
 });
+$('fSitesTitle').oninput=e=>{ S.sitesTitle=e.target.value; renderSites(); save(); };
+$('siteRows').addEventListener('input',e=>{
+  const i=+e.target.dataset.si, k=e.target.dataset.k; if(isNaN(i)||!k) return;
+  S.sites[i][k]=e.target.value; if(k!=='url') renderSites(); save();
+});
+$('siteRows').addEventListener('change',e=>{
+  const i=+e.target.dataset.si; if(isNaN(i)||e.target.dataset.k!=='url') return;
+  const u=siteUrl(e.target.value); if(e.target.value.trim() && !u) toast('Adresse de site invalide');
+  S.sites[i].url=u || e.target.value.trim(); e.target.value=S.sites[i].url;
+  if(u && !S.sites[i].title){ S.sites[i].title=host(u).split('.')[0].replace(/^./,m=>m.toUpperCase()); const t=$('st-'+i); if(t) t.value=S.sites[i].title; }
+  renderSites(); save();
+});
+$('siteRows').addEventListener('click',e=>{
+  const up=e.target.closest('[data-sup]'), del=e.target.closest('[data-sdel]');
+  if(up){ const i=+up.dataset.sup; [S.sites[i-1],S.sites[i]]=[S.sites[i],S.sites[i-1]]; }
+  else if(del){ S.sites.splice(+del.dataset.sdel,1); }
+  else return;
+  renderSiteRows(); renderSites(); save();
+});
+$('addSite').onclick=()=>{
+  if(S.sites.length>=12){ toast('12 sites maximum'); return; }
+  S.sites.push({title:'',url:'',desc:''}); renderSiteRows(); renderSites(); save();
+  $('su-'+(S.sites.length-1)).focus();
+};
 $('addLink').onclick=()=>{
   if(S.links.length>=40){ toast('40 liens maximum'); return; }
   S.links.push({title:'Nouveau lien',url:''}); renderLinkRows(); renderProfile(); renderLinks(); save();
